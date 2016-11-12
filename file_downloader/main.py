@@ -6,14 +6,15 @@ from . import downloader
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Download all URLs from the input file")
     parser.add_argument('file', type=argparse.FileType('r'),
                         help="path to the file containing URLs")
     parser.add_argument('-d', '--destination', default='.',
                         type=check_directory,
                         help="directory to put downloaded files")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-q', '--quiet', action="store_true",
+    group.add_argument('-q', '--quiet', action='store_true',
                        help="suppress output")
     group.add_argument('-v', '--verbose', action='store_true',
                        help='enable some additional debug logging output')
@@ -22,7 +23,8 @@ def parse_args():
 
 def check_directory(value):
     if not os.path.exists(value):
-        raise argparse.ArgumentTypeError("Directory doesn't exist %s", value)
+        raise argparse.ArgumentTypeError(
+            "directory doesn't exist {}".format(value))
     return value
 
 
