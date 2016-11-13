@@ -1,8 +1,11 @@
 import argparse
+import datetime
 import logging
 import os
 
 from . import downloader
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -29,15 +32,20 @@ def check_directory(value):
 
 
 def configure_logging(args):
+    level = logging.INFO
     if args.quiet:
-        logging.basicConfig(level=logging.ERROR)
+        level = logging.ERROR
     elif args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
+        level = logging.DEBUG
+    logging.basicConfig(level=level, format='- %(message)s')
 
 
 def main():
     args = parse_args()
     configure_logging(args)
-    downloader.Downloader(args.file, args.destination).run()
+    start_time = datetime.datetime.now()
+    try:
+        downloader.AsyncIODownloader(args.file.name, args.destination).run()
+        logger.info("Done. Took %s", datetime.datetime.now() - start_time)
+    except Exception as why:
+        logger.error("Unexpected error: %s", why)
