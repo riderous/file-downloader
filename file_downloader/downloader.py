@@ -37,9 +37,9 @@ class AsyncIODownloader:
         """Reads the input file line be line and adds new tasks on the event
         loop to download and save files to disc.
         """
-        async with aiofiles.open(self.file, mode='r') as f:
-            async with aiohttp.ClientSession() as session:
-                tasks = []
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            async with aiofiles.open(self.file, mode='r') as f:
                 async for line in f:
                     logger.debug("Read line: %s", line)
                     line = line.strip()
@@ -48,7 +48,7 @@ class AsyncIODownloader:
                     tasks.append(event_loop.create_task(
                         self._download_file(session, line)))
 
-                await asyncio.wait(tasks)
+            await asyncio.wait(tasks)
 
     async def _download_file(self, session, url):
         """Fetches a URL in the given session.
